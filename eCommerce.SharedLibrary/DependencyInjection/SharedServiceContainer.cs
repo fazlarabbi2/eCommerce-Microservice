@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using eCommerce.SharedLibrary.Middleware;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -30,6 +32,17 @@ namespace eCommerce.SharedLibrary.DependencyInjection
             JWTAuthenticationScheme.AddJwtAuthenticationScheme(services, config);
 
             return services;
+        }
+
+        public static IApplicationBuilder UseSharedPolicies(this IApplicationBuilder app)
+        {
+            // Use global Exception
+            app.UseMiddleware<GlobalException>();
+
+            //Register middleware to block all outsiders API calls
+            app.UseMiddleware<ListenToOnlyApiGateway>();
+
+            return app;
         }
     }
 }
